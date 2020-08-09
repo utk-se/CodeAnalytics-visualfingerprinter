@@ -30,9 +30,9 @@ def run_modules(modulelist, repopath):
     results = list(map(get_module_results, insts))
 
     return {
-        "file": dict(
-            [(_friendly_names[x[0].__class__], x[1]) for x in results]
-        ),
+        # "file": dict(
+        #     [(_friendly_names[x[0].__class__], x[1]) for x in results]
+        # ),
         "repo": dict(
             [(_friendly_names[x[0].__class__], x[2]) for x in results]
         ),
