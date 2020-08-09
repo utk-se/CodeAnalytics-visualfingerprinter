@@ -1,5 +1,6 @@
 """Analyzes the visual identity of code."""
 
+import os
 import sys
 import argparse
 import json
@@ -12,8 +13,9 @@ def analyze(repopath, modules=None):
     if modules is None:
         modules = cafpmodules._all_modules
 
-    with utils.pushd(repopath):
-        return cafpmodules.run_modules(modules, repopath)
+    abspath = os.path.abspath(repopath)
+    with utils.pushd(abspath):
+        return cafpmodules.run_modules(modules, abspath)
 
 def main():
     parser = argparse.ArgumentParser(description="CA-VisualFingerprinter")
