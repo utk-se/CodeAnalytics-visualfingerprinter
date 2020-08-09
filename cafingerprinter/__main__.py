@@ -5,13 +5,15 @@ import argparse
 import json
 
 from cadistributor import log
+from . import utils
 from . import modules as cafpmodules
 
 def analyze(repopath, modules=None):
     if modules is None:
         modules = cafpmodules._all_modules
 
-    return cafpmodules.run_modules(modules, repopath)
+    with utils.pushd(repopath):
+        return cafpmodules.run_modules(modules, repopath)
 
 def main():
     parser = argparse.ArgumentParser(description="CA-VisualFingerprinter")

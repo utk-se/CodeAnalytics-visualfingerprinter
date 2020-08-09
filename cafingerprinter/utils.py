@@ -1,4 +1,6 @@
 
+import os
+import contextlib
 import pygit2
 
 def list_all_git_files(repopath):
@@ -11,3 +13,12 @@ def list_all_git_files(repopath):
         files.append(entry.path)
 
     return files
+
+@contextlib.contextmanager
+def pushd(new_dir):
+    previous_dir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(previous_dir)
