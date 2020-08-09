@@ -11,7 +11,9 @@ class CafpModule():
     def _foreach_gitfile(self, function):
         """
         NOTE: function must be pure (excepting of course, debugging and file reading)
-        function(file: str) -> json-compatible output
+
+        arg function(file: str) -> json-compatible output
+        output dict(filename: function_result)
         """
         files = utils.list_all_git_files(self.repodir)
 
