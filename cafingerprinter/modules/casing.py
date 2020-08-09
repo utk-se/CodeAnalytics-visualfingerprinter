@@ -14,5 +14,4 @@ Aggregation:
 from .base import CafpModule
 
 class CafpCasingAnalyzer(CafpModule):
-    def run(self):
-        pass
+    pass

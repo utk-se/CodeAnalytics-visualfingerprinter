@@ -12,5 +12,5 @@ Aggregation:
 from .base import CafpModule
 
 class CafpIndentationAnalyzer(CafpModule):
-    def run(self):
-        pass
+    def _build_line_indent_list(self):
+        lines_files = self._foreach_gitfile()
