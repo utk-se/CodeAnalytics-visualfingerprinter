@@ -18,7 +18,7 @@ def _get_line_count(file):
 class CafpLineCounter(CafpModule):
     def _run_file_analysis(self):
         cnts = self._foreach_gitfile(_get_line_count)
-        cnts = [x for x in cnts if x[1] is not None]
+        cnts = {k: v for k, v in cnts.items() if v is not None}
         return cnts
 
     def _run_repo_analysis(self):
