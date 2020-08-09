@@ -3,6 +3,7 @@ Example analysis module, just counts the number of lines in the file.
 """
 
 import statistics
+from multiprocessing import Pool
 
 from cadistributor import log
 from .base import CafpModule
@@ -27,8 +28,10 @@ class CafpLineCounter(CafpModule):
         result = {
             "sum": sum(raw_nums),
             "mean": statistics.mean(raw_nums),
-            "by_ext": {}
+            "by_ext": {k: 0 for k in file_exts}
         }
-        for ext in file_exts:
-            result['by_ext'][ext] = sum([v for k,v in self.file_results.items() if k.endswith('.'+ext)])
+        for k, v in self.file_results.items():
+            if k.split('.')[-1] in file_exts:
+                result['by_ext'][k.split('.')[-1]] += v
+
         return result
