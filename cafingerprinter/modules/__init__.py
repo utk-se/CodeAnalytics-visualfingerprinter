@@ -24,12 +24,16 @@ def run_modules(modulelist, repopath):
 
     def get_module_results(i):
         i.run()
-        return (i.file_results, i.repo_results)
+        return (i, i.file_results, i.repo_results)
 
-    # TODO parallelism
-    results = map(get_module_results, insts)
+    # TODO parallelism (requires kept order)
+    results = list(map(get_module_results, insts))
 
-    return dict(zip(
-        list(map(lambda x: _friendly_names[x.__class__], insts)),
-        results
-    ))
+    return {
+        "file": dict(
+            [(_friendly_names[x[0].__class__], x[1]) for x in results]
+        ),
+        "repo": dict(
+            [(_friendly_names[x[0].__class__], x[2]) for x in results]
+        ),
+    }

@@ -19,6 +19,13 @@ class CafpLineCounter(CafpModule):
         return self._foreach_gitfile(_get_line_count)
 
     def _run_repo_analysis(self):
-        return {
-            "mean": statistics.mean([v for k,v in self.file_results.items()]),
+        file_exts = [(k.split('.')[-1]) for k,v in self.file_results.items() if '.' in k.split('/')[-1]]
+        raw_nums = [v for k,v in self.file_results.items()]
+        result = {
+            "mean": statistics.mean(raw_nums),
+            "sum": sum(raw_nums),
+            "by_ext": {}
         }
+        for ext in file_exts:
+            result['by_ext'][ext] = sum([v for k,v in self.file_results.items() if k.endswith('.'+ext)])
+        return result
