@@ -27,7 +27,7 @@ class CafpLineCounter(CafpModule):
         raw_nums = [v for k,v in self.file_results.items()]
         result = {
             "sum": sum(raw_nums),
-            "mean": statistics.mean(raw_nums),
+            "mean": statistics.mean(raw_nums) if len(raw_nums) > 0 else 0,
             "by_ext": {k: 0 for k in file_exts}
         }
         for k, v in self.file_results.items():
