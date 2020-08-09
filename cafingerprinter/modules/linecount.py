@@ -4,6 +4,7 @@ Example analysis module, just counts the number of lines in the file.
 
 import statistics
 
+from cadistributor import log
 from .base import CafpModule
 
 def _get_line_count(file):
