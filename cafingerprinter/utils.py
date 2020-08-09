@@ -10,7 +10,8 @@ def list_all_git_files(repopath):
 
     files = []
     for entry in idx:
-        files.append(entry.path)
+        if os.path.isfile(entry.path):
+            files.append(entry.path)
 
     return files
 
