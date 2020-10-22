@@ -7,10 +7,10 @@ import os
 
 from cadistributor import log
 from .base import CafpModule
-from ..utils import get_file_ext
+from ..utils import get_safe_file_ext
 
 def _get_file_type(file):
-    return get_file_ext(file.split('/')[-1])
+    return get_safe_file_ext(file.split('/')[-1])
 
 class CafpFileCounter(CafpModule):
     def _run_file_analysis(self):

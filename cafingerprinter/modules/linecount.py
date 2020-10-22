@@ -7,7 +7,7 @@ from multiprocessing import Pool
 
 from cadistributor import log
 from .base import CafpModule
-from ..utils import get_file_ext
+from ..utils import get_safe_file_ext as get_file_ext
 
 def _get_line_count(file):
     try:
