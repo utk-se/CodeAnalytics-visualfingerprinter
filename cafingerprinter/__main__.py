@@ -11,13 +11,16 @@ from . import modules as cafpmodules
 
 def analyze(repopath, modules=None, per_file_results=False):
     _m_classes = []
-    for m in modules:
-        try:
-            _m_classes.append(cafpmodules._class_by_name[m])
-        except KeyError as e:
-            log.error(f"Could not find module {m}")
-            log.error(e)
-            raise
+    if modules is None:
+        _m_classes = cafpmodules._all_modules
+    else:
+        for m in modules:
+            try:
+                _m_classes.append(cafpmodules._class_by_name[m])
+            except KeyError as e:
+                log.error(f"Could not find module {m}")
+                log.error(e)
+                raise
 
     abspath = os.path.abspath(repopath)
     with utils.pushd(abspath):
