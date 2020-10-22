@@ -15,8 +15,6 @@ import numpy as np
 from cadistributor import log
 from .base import CafpModule
 
-# per_file_resolution = 100
-
 indentation_re = re.compile('^([ \t]+)')
 
 def _get_indentation_levels(file):

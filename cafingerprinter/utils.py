@@ -25,16 +25,20 @@ def pushd(new_dir):
     finally:
         os.chdir(previous_dir)
 
+include_subexts = ['.min', '.manifest', '.config']
+
 def get_file_ext(filename):
     """
     Normal os.path.splitext does not think .min.js is a full extension
-    This function combines all the suffixes, and is safe to store in mongo
+    This function combines select prior suffixes like .min
     """
     p = pathlib.Path(filename)
-    if len(p.suffixes) > 1:
-        return ''.join(p.suffixes)
-    # if p.suffixes == ['.min', '.js']:
-    return p.suffix
+    if len(p.suffixes) <= 1:
+        return p.suffix
+    elif p.suffixes[-2] in include_subexts:
+        return ''.join(p.suffixes[-2:])
+    else:
+        return p.suffix
 
 def get_safe_file_ext(filename):
     return get_file_ext(filename).replace('.', '_')
