@@ -1,5 +1,6 @@
 
 from .indentation import CafpIndentationAnalyzer as Indentation
+from .indentation_levelcounter import CafpIndentationLevelCounter as IndentationLevelCounter
 from .casing import CafpCasingAnalyzer as Casing
 from .linecount import CafpLineCounter as LineCount
 from .filecount import CafpFileCounter as FileCount
@@ -8,7 +9,8 @@ _all_modules = [
     Indentation,
     Casing,
     LineCount,
-    FileCount
+    FileCount,
+    IndentationLevelCounter,
 ]
 
 # used for e.x. --skip=indentation or --only=casing,indentation
@@ -17,6 +19,7 @@ _friendly_names = {
     Casing: "casing",
     LineCount: "linecount",
     FileCount: "filecount",
+    IndentationLevelCounter: "indentlevelcounter",
 }
 _class_by_name = {v: k for k, v in _friendly_names.items()}
 

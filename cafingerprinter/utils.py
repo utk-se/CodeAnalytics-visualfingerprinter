@@ -25,7 +25,7 @@ def pushd(new_dir):
     finally:
         os.chdir(previous_dir)
 
-include_subexts = ['.min', '.manifest', '.config']
+include_subexts = ['.min', '.manifest', '.config', '.tar']
 
 def get_file_ext(filename):
     """
