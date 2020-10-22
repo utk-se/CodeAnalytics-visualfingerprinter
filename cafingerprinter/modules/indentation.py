@@ -43,6 +43,8 @@ class CafpIndentationAnalyzer(CafpModule):
         cnts = self._foreach_gitfile(_get_indentation_levels)
         results = {}
         for fname, ilevel in cnts.items():
+            if ilevel is None:
+                continue
             results[fname] = {}
 
             indent_type = ilevel.sum(axis=1)
