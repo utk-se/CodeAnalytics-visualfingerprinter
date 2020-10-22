@@ -7,4 +7,4 @@ from cadistributor import log
 from .modules import Indentation, Casing
 from .__main__ import analyze, main
 
-__version__ = "0.0.6-vf"
+__version__ = "0.0.7-vf"
