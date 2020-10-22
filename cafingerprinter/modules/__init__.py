@@ -17,7 +17,7 @@ _friendly_names = {
 }
 _class_by_name = {v: k for k, v in _friendly_names.items()}
 
-def run_modules(modulelist, repopath):
+def run_modules(modulelist, repopath, per_file_results=False):
     insts = []
     for m in modulelist:
         insts.append(m(repopath))
@@ -29,11 +29,18 @@ def run_modules(modulelist, repopath):
     # TODO parallelism (requires kept order)
     results = list(map(get_module_results, insts))
 
-    return {
-        # "files": dict(
-        #     [(_friendly_names[x[0].__class__], x[1]) for x in results]
-        # ),
-        "repo": dict(
-            [(_friendly_names[x[0].__class__], x[2]) for x in results]
-        ),
-    }
+    if per_file_results:
+        return {
+            "files": dict(
+                [(_friendly_names[x[0].__class__], x[1]) for x in results]
+            ),
+            "repo": dict(
+                [(_friendly_names[x[0].__class__], x[2]) for x in results]
+            ),
+        }
+    else:
+        return {
+            "repo": dict(
+                [(_friendly_names[x[0].__class__], x[2]) for x in results]
+            ),
+        }

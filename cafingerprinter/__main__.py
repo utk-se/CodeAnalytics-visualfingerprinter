@@ -9,19 +9,20 @@ from cadistributor import log
 from . import utils
 from . import modules as cafpmodules
 
-def analyze(repopath, modules=None):
+def analyze(repopath, modules=None, per_file_results=False):
     if modules is None:
         modules = cafpmodules._all_modules
 
     abspath = os.path.abspath(repopath)
     with utils.pushd(abspath):
-        return cafpmodules.run_modules(modules, abspath)
+        return cafpmodules.run_modules(modules, abspath, per_file_results)
 
 def main():
     parser = argparse.ArgumentParser(description="CA-VisualFingerprinter")
     parser.add_argument('repopath', metavar='repo', type=str, help="Path to repo to analyze")
     parser.add_argument('--json', metavar='json_outfile', type=str, help="Path to write result json")
     parser.add_argument('--quiet', '-q', action='store_true', help="Reduce logging verbosity and don't print output.")
+    parser.add_argument('--perfile', dest='per_file_results', action='store_true', help="Include per-file results in output json.")
 
     which_modules = parser.add_mutually_exclusive_group()
     which_modules.add_argument('--skip', metavar='skip_modules', action='append', help="Skip an analysis module by name")
@@ -29,7 +30,7 @@ def main():
     args = parser.parse_args()
 
     log.info(f"Running analyzer on {args.repopath}")
-    r = analyze(args.repopath)
+    r = analyze(args.repopath, per_file_results=args.per_file_results)
 
     if 'json_outfile' not in args and not args.quiet:
         log.info(f"Analysis output:\n{json.dumps(r, indent=2, sort_keys=True)}")
