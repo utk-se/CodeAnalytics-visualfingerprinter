@@ -24,7 +24,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "ca-distributor @ git+ssh://git@github.com/utk-se/CodeAnalytics-distributor.git#egg=ca-distributor",
-        "numpy"
+        "numpy",
+        "Pygments"
     ],
     dependency_links = [
         'http://github.com/utk-se/CodeAnalytics-distributor/tarball/master#egg=ca-distributor'

@@ -40,5 +40,7 @@ class CafpModule():
         log.warn("Override me!")
 
     def run(self):
+        self.tmp = utils.DotDict()
         self.file_results = self._run_file_analysis()
         self.repo_results = self._run_repo_analysis()
+        del self.tmp

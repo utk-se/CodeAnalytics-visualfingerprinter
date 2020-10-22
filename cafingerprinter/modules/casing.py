@@ -11,7 +11,105 @@ Aggregation:
   aggregated casing style (dominant, outlier) for each naming type
 """
 
+from enum import Enum
+from collections import Counter
+
+from cadistributor import log
 from .base import CafpModule
+from ..lexing.pygments_proxy import token, get_tokens_for_file
+
+# https://stackoverflow.com/a/51976841/2375851
+class CasingScheme(str, Enum):
+    other = "other"
+    camel = "CamelCase"
+    lowercamel = "lowerCamelCase"
+    snake = "snake_case"
+    tallsnake = "TALL_SNAKE_CASE"
+    kebab = "kebab-case"
+    tallkebab = "KEBAB-CASE"
+    flat = "flatcase"
+    upper = "UPPERCASE"
+
+# (has_upper, has_lower, has_dash, has_underscore, first_upper)
+_case_id_map = {
+    (True,  True,  False, False, True  ): CasingScheme.camel,
+    (True,  True,  False, False, False ): CasingScheme.lowercamel,
+    (False, True,  False, True,  False ): CasingScheme.snake,
+    (True,  False, False, True,  True  ): CasingScheme.tallsnake,
+    (False, True,  True,  False, False ): CasingScheme.kebab,
+    (True,  False, True,  False, True  ): CasingScheme.tallkebab,
+    (False, True,  False, False, False ): CasingScheme.flat,
+    (True,  False, False, False, False ): CasingScheme.upper,
+}
+
+def classify_casing_scheme(token_text):
+    """Given a string, return the casing type"""
+    has_upper = not token_text.islower()
+    has_lower = not token_text.isupper()
+    has_dash = '-' in token_text
+    has_underscore = '_' in token_text
+    first_upper = token_text[0].isupper()
+    case_id = (has_upper, has_lower, has_dash, has_underscore, first_upper)
+    if case_id in _case_id_map:
+        return _case_id_map[case_id]
+    return CasingScheme.other
+
+# https://pygments.org/docs/tokens/#module-pygments.token
+target_token_types = [
+    token.Name.Class,
+    token.Name.Function,
+    token.Name.Label,
+    token.Name.Variable,
+]
+# subtypes of target_token_types we want to exclude
+exclude_token_types = [
+    token.Name.Function.Magic,
+    token.Name.Variable.Magic,
+]
+
+def _is_token_targetable(tokentype):
+    if tokentype in exclude_token_types:
+        return False
+    if tokentype in target_token_types:
+        return True
+    for target_type in target_token_types:
+        if tokentype in target_type:
+            return True
+    return False
+
+# reducing within the _foreach_gitfile step to avoid massive memory requirements
+# the size of tokens for a file is multiples larger than the file itself
+def _tokenize_and_reduce_file(filename):
+    raw_tokens = get_tokens_for_file(filename)
+    if raw_tokens is None:
+        log.debug(f"File {filename} failed to lex.")
+        return None
+    target_tokens = []
+    for (idx, tokentype, value) in raw_tokens:
+        if _is_token_targetable(tokentype):
+            target_tokens.append((idx, tokentype, value))
+    return target_tokens
 
 class CafpCasingAnalyzer(CafpModule):
-    pass
+    def _run_file_analysis(self):
+        tokenized = self._foreach_gitfile(_tokenize_and_reduce_file)
+        # ignore non-lexable files:
+        for k in list(tokenized.keys()):
+            if tokenized[k] is None:
+                del tokenized[k]
+
+        casings = {}
+        self.tmp.counters = {}
+        for filename, tokens in tokenized.items():
+            casings[filename] = {}
+            self.tmp.counters[filename] = {}
+            tokens_with_cases = []
+            for (idx, tokentype, value) in tokens:
+                case = classify_casing_scheme(value)
+                tokens_with_cases.append((tokentype, case))
+            self.tmp.counters[filename] = Counter(tokens_with_cases)
+            casings[filename] = dict(self.tmp.counters[filename])
+        return casings
+
+    def _run_repo_analysis(self):
+        log.debug(self.file_results)
