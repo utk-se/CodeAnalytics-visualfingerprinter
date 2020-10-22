@@ -1,17 +1,10 @@
 """
-Per-file:
-  Tabs or spaces
-  TODO Find shiftwidth/tabstop by leading whitespace GCD
-  TODO (other module?) Find mixed indent in files
-  TODO (other module?) Find outlier indent (e.x. two-space indent in 4-space indent trending file)
-
-Aggregation:
-  Tabs vs spaces total usage
-  TODO Outlier occurence frequency trends
+This module counts how many lines exist at a specific indentation level.
 """
 
 import re
 import numpy as np
+from collections import Counter
 
 from cadistributor import log
 from .base import CafpModule
@@ -34,32 +27,36 @@ def _get_indentation_levels(file):
         log.warn(f"File {file} is probably binary.")
         return None
 
-class CafpIndentationAnalyzer(CafpModule):
+class CafpIndentationLevelCounter(CafpModule):
     def _build_line_indent_list(self):
         lines_files = self._foreach_gitfile()
 
     def _run_file_analysis(self):
         cnts = self._foreach_gitfile(_get_indentation_levels)
         results = {}
+        self.tmp = {}
         for fname, ilevel in cnts.items():
             if ilevel is None:
                 continue
             results[fname] = {}
-
-            indent_type = ilevel.sum(axis=1)
-            results[fname]["indent_type"] = indent_type.tolist()
-
-            # results[fname]["spaces_raw"] = ilevel[0].tolist()
-            # results[fname]["tabs_raw"] = ilevel[1].tolist()
+            self.tmp[fname] = {}
+            l_spaces = ilevel[0].tolist()
+            l_tabs   = ilevel[1].tolist()
+            self.tmp[fname]['c_spaces'] = Counter(l_spaces)
+            self.tmp[fname]['c_tabs']   = Counter(l_tabs)
+            results[fname]['spaces'] = dict(self.tmp[fname]['c_spaces'])
+            results[fname]['tabs']   = dict(self.tmp[fname]['c_tabs'])
         return results
 
     def _run_repo_analysis(self):
-        # file_exts = [(k.split('.')[-1]) for k,v in self.file_results.items() if '.' in k.split('/')[-1]]
-        t_spaces = sum([v["indent_type"][0] for k,v in self.file_results.items()])
-        t_tabs   = sum([v["indent_type"][1] for k,v in self.file_results.items()])
+        t_spaces = Counter()
+        t_tabs = Counter()
+        for k,v in self.tmp.items():
+            t_spaces += v['c_spaces']
+            t_tabs += v['c_tabs']
         return {
-            "totals": {
-                "spaces": t_spaces,
-                "tabs": t_tabs
+            "lines_by_indent_level": {
+                "spaces": dict(t_spaces),
+                "tabs": dict(t_tabs)
             }
         }
