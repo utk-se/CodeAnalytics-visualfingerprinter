@@ -1,5 +1,6 @@
 
-from multiprocessing import Pool
+# from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool as Pool
 
 from cadistributor import log
 from .. import utils
