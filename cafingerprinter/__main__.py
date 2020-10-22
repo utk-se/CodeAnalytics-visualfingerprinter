@@ -4,6 +4,7 @@ import os
 import sys
 import argparse
 import json
+from bson.json_util import dumps, loads
 
 from cadistributor import log
 from . import utils
@@ -52,6 +53,9 @@ def main():
 
     if 'json_outfile' not in args and not args.quiet:
         log.info(f"Analysis output:\n{json.dumps(r, indent=2, sort_keys=True)}")
+
+    r_bson = dumps(r)
+    log.info(f"Result BSON size: {len(r_bson)}")
 
 if __name__ == "__main__":
     main()

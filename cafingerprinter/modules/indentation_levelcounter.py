@@ -8,6 +8,7 @@ from collections import Counter
 
 from cadistributor import log
 from .base import CafpModule
+from ..utils import get_safe_file_ext as get_file_ext
 
 indentation_re = re.compile('^([ \t]+)')
 
@@ -49,14 +50,26 @@ class CafpIndentationLevelCounter(CafpModule):
         return results
 
     def _run_repo_analysis(self):
+        by_ext = {}
         t_spaces = Counter()
         t_tabs = Counter()
         for k,v in self.tmp.items():
             t_spaces += v['c_spaces']
             t_tabs += v['c_tabs']
+            ext = get_file_ext(k)
+            if ext not in by_ext:
+                by_ext[ext] = {}
+                by_ext[ext]['c_spaces'] = Counter()
+                by_ext[ext]['c_tabs'] = Counter()
+            by_ext[ext]['c_spaces'] += v['c_spaces']
+            by_ext[ext]['c_tabs'] += v['c_tabs']
+        for k,v in by_ext.items():
+            by_ext[k]['c_spaces'] = dict(by_ext[k]['c_spaces'])
+            by_ext[k]['c_tabs'] = dict(by_ext[k]['c_tabs'])
         return {
             "lines_by_indent_level": {
                 "spaces": dict(t_spaces),
                 "tabs": dict(t_tabs)
-            }
+            },
+            "indent_level_by_ext_by_line": by_ext
         }
