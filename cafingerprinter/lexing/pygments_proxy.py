@@ -15,6 +15,8 @@ def get_tokens_for_file(filepath):
     the module _foreach_gitfile function to work without a data race.
     Performance sacrifice is not a primary concern.
     Also the memory footprint of a cache is impractical for large repos.
+    Any cache that isn't cross-process is even more useless since most modules
+    only get the result for one file once.
     """
     path = pathlib.Path(filepath)
     try:
