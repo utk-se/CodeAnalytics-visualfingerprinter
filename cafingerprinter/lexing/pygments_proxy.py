@@ -20,7 +20,12 @@ def get_tokens_for_file(filepath):
     try:
         lxr = pygments.lexers.get_lexer_for_filename(path.name)
     except pygments.util.ClassNotFound as e:
-        log.warn(f"{e}")
+        log.debug(f"{e}")
         return None
     with path.open('r') as f:
-        return lxr.get_tokens_unprocessed(f.read())
+        log.debug(f"lexer tokenizing {path.name} ...")
+        try:
+            return lxr.get_tokens_unprocessed(f.read())
+        except UnicodeDecodeError as e:
+            log.warn(f"Lexer failed to decode {filepath}")
+            return None
