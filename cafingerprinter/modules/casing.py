@@ -108,7 +108,7 @@ class CafpCasingAnalyzer(CafpModule):
                 case = classify_casing_scheme(value)
                 tokens_with_cases.append((tokentype, case))
             self.tmp.counters[filename] = Counter(tokens_with_cases)
-            casings[filename] = dict(self.tmp.counters[filename])
+            casings[filename] = {str(k): v for k,v in dict(self.tmp.counters[filename]).items()}
         return casings
 
     def _run_repo_analysis(self):
