@@ -51,6 +51,8 @@ _case_id_map = {
 # operations are relatively expensive to identify the casing of the name.
 ## Why this maxsize?
 # no idea, just a random guess
+# but it works: CacheInfo(hits=4466185, misses=693405, maxsize=4000, currsize=4000
+# 4.4 million vs 0.7 million
 @lru_cache(maxsize=4000)
 def classify_casing_scheme(token_text):
     """Given a string, return the casing type"""
@@ -68,10 +70,6 @@ def classify_casing_scheme(token_text):
 
 # https://pygments.org/docs/tokens/#module-pygments.token
 target_token_types = [
-    # token.Name.Class,
-    # token.Name.Function,
-    # token.Name.Label,
-    # token.Name.Variable,
     token.Name,
 ]
 # subtypes of target_token_types we want to exclude
