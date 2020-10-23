@@ -125,7 +125,7 @@ class CafpCasingAnalyzer(CafpModule):
                 tokens_with_cases.append((tokentype, case))
             self.tmp.counters[filename] = Counter(tokens_with_cases)
             for (tokentype,casing),v in self.tmp.counters[filename].items():
-                tokenname = str(tokentype)
+                tokenname = str(tokentype).replace('.', '_')
                 # log.debug(f"{filename} {(tokentype,)}/{tokenname} with {casing}")
                 if tokenname not in casings[filename]:
                     casings[filename][tokenname] = {}
