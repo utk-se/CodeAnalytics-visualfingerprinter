@@ -1,5 +1,6 @@
 
-from multiprocessing import Pool
+# from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool as Pool
 
 from cadistributor import log
 from .. import utils
@@ -39,5 +40,17 @@ class CafpModule():
         log.warn("Override me!")
 
     def run(self):
+        """Main activity of the module.
+
+        This function could (should) potentially be run in a separate process,
+        so we must not depend on other modules or parallel tasks.
+        """
+        self.tmp = utils.DotDict()
         self.file_results = self._run_file_analysis()
         self.repo_results = self._run_repo_analysis()
+        del self.tmp
+        self.exit_cleanup()
+
+    def exit_cleanup(self):
+        """If a module needs to do cleanup, override this."""
+        pass
